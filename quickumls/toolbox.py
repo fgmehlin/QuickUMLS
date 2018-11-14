@@ -1,23 +1,20 @@
 from __future__ import unicode_literals, division, print_function
 
-import leveldb
-import os
 # build-in modules
 import re
+import os
+import six
 import unicodedata
-from itertools import takewhile, repeat
 from string import punctuation
+from itertools import takewhile, repeat
+from six.moves import xrange
 
 # installed modules
 import numpy
-import six
-from six.moves import xrange
+import leveldb
 
 # project imports
-try:
-    from quickumls.simstring import simstring
-except ImportError:
-    from .simstring import simstring
+from simstring import simstring
 
 # Python version specific imports
 if six.PY2:

@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, PEP420PackageFinder
 
 requires = [
     "leveldb>=0.193",
@@ -10,10 +10,8 @@ requires = [
 setup(
     name="quickumls",
     version="1.0",
-    description="Forked from https://github.com/Georgetown-IR-Lab/QuickUMLS",
-    author="Floran Gmehlin",
-    author_email="email@domain.gosu",
-    url="https://github.com/fgmehlin/QuickUMLS",
+    description="Fork from https://github.com/Georgetown-IR-Lab/QuickUMLS",
+    packages=[pkg for pkg in PEP420PackageFinder.find() if pkg.startswith("quickumls")],
     zip_safe=False,
     install_requires=requires,
 )

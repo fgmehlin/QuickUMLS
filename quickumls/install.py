@@ -1,17 +1,18 @@
 from __future__ import unicode_literals, division, print_function
 
+import argparse
+import codecs
 # built in modules
 import os
+import shutil
 import sys
 import time
-import codecs
-import shutil
-import argparse
-from six.moves import input
 
+from six.moves import input
 # project modules
 from toolbox import countlines, CuiSemTypesDB, SimstringDBWriter, mkdir
-from constants import HEADERS_MRCONSO, HEADERS_MRSTY, LANGUAGES
+
+from quickumls.constants import HEADERS_MRCONSO, HEADERS_MRSTY, LANGUAGES
 
 try:
     from unidecode import unidecode

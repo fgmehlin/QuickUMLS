@@ -1,9 +1,9 @@
 try:
-    from network import MinimalClient
+    from quickumls.network import MinimalClient
     from quickumls import QuickUMLS
 except ImportError:
     from .network import MinimalClient
-    from .quickumls import QuickUMLS
+    from quickumls import QuickUMLS
 
 
 def get_quickumls_client(host='localhost', port=4645):

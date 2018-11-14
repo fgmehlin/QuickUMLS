@@ -2,21 +2,20 @@
 from __future__ import (
     unicode_literals, division, print_function, absolute_import)
 
+import datetime
 # built in modules
 import os
 import sys
-import datetime
-from six.moves import xrange
 
+import nltk
 # installed modules
 import spacy
-import nltk
+from six.moves import xrange
 from unidecode import unidecode
 
 # project modules
 try:
-    import toolbox
-    import constants
+    from quickumls import constants, toolbox
 except ImportError:
     from . import toolbox
     from . import constants

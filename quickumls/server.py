@@ -1,8 +1,8 @@
 try:
     from quickumls import QuickUMLS
-    from network import run_server
+    from quickumls.network import run_server
 except ImportError:
-    from .quickumls import QuickUMLS
+    from quickumls import QuickUMLS
     from .MinimalServer import run_server
 
 from argparse import ArgumentParser

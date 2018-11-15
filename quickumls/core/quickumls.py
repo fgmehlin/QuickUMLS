@@ -1,54 +1,54 @@
 # future statements for Python 2 compatibility
-from __future__ import (
-    unicode_literals, division, print_function, absolute_import)
+from __future__ import unicode_literals, division, print_function, absolute_import
 
 import datetime
+import nltk
+
 # built in modules
 import os
-import sys
 
-import nltk
 # installed modules
 import spacy
+import sys
 from six.moves import xrange
 from unidecode import unidecode
 
 # project modules
-try:
-    from quickumls import constants, toolbox
-except ImportError:
-    from . import toolbox
-    from . import constants
+from quickumls.core import constants, toolbox
 
 
 class QuickUMLS(object):
     def __init__(
-            self, quickumls_fp,
-            overlapping_criteria='score', threshold=0.7, window=5,
-            similarity_name='jaccard', min_match_length=3,
-            accepted_semtypes=constants.ACCEPTED_SEMTYPES,
-            verbose=False):
+        self,
+        quickumls_fp,
+        overlapping_criteria="score",
+        threshold=0.7,
+        window=5,
+        similarity_name="jaccard",
+        min_match_length=3,
+        accepted_semtypes=constants.ACCEPTED_SEMTYPES,
+        verbose=False,
+    ):
 
         self.verbose = verbose
 
-        valid_criteria = {'length', 'score'}
+        valid_criteria = {"length", "score"}
         err_msg = (
             '"{}" is not a valid overlapping_criteria. Choose '
-            'between {}'.format(
-                overlapping_criteria, ', '.join(valid_criteria)
-            )
+            "between {}".format(overlapping_criteria, ", ".join(valid_criteria))
         )
         assert overlapping_criteria in valid_criteria, err_msg
         self.overlapping_criteria = overlapping_criteria
 
-        valid_similarities = {'dice', 'jaccard', 'cosine', 'overlap'}
-        err_msg = ('"{}" is not a valid similarity name. Choose between '
-                   '{}'.format(similarity_name, ', '.join(valid_similarities)))
-        assert not(valid_similarities in valid_similarities), err_msg
+        valid_similarities = {"dice", "jaccard", "cosine", "overlap"}
+        err_msg = '"{}" is not a valid similarity name. Choose between ' "{}".format(
+            similarity_name, ", ".join(valid_similarities)
+        )
+        assert not (valid_similarities in valid_similarities), err_msg
         self.similarity_name = similarity_name
 
-        simstring_fp = os.path.join(quickumls_fp, 'umls-simstring.db')
-        cuisem_fp = os.path.join(quickumls_fp, 'cui-semtypes.db')
+        simstring_fp = os.path.join(quickumls_fp, "umls-simstring.db")
+        cuisem_fp = os.path.join(quickumls_fp, "cui-semtypes.db")
 
         self.valid_punct = constants.UNICODE_DASHES
         self.negations = constants.NEGATIONS
@@ -58,31 +58,31 @@ class QuickUMLS(object):
         self.threshold = threshold
         self.min_match_length = min_match_length
         self.to_lowercase_flag = os.path.exists(
-            os.path.join(quickumls_fp, 'lowercase.flag')
+            os.path.join(quickumls_fp, "lowercase.flag")
         )
         self.normalize_unicode_flag = os.path.exists(
-            os.path.join(quickumls_fp, 'normalize-unicode.flag')
+            os.path.join(quickumls_fp, "normalize-unicode.flag")
         )
 
-        language_fp = os.path.join(quickumls_fp, 'language.flag')
+        language_fp = os.path.join(quickumls_fp, "language.flag")
 
         # download stopwords if necessary
         try:
             nltk.corpus.stopwords.words()
         except LookupError:
-            nltk.download('stopwords')
+            nltk.download("stopwords")
 
         if os.path.exists(language_fp):
             with open(language_fp) as f:
                 self.language_flag = f.read().strip()
         else:
-            self.language_flag = 'ENG'
+            self.language_flag = "ENG"
 
         if self.language_flag not in constants.LANGUAGES:
             raise ValueError('Language "{}" not supported'.format(self.language_flag))
         elif constants.LANGUAGES[self.language_flag] is None:
             self._stopwords = set()
-            spacy_lang = 'XXX'
+            spacy_lang = "XXX"
         else:
             self._stopwords = set(
                 nltk.corpus.stopwords.words(constants.LANGUAGES[self.language_flag])
@@ -96,9 +96,7 @@ class QuickUMLS(object):
 
         self.accepted_semtypes = accepted_semtypes
 
-        self.ss_db = toolbox.SimstringDBReader(
-            simstring_fp, similarity_name, threshold
-        )
+        self.ss_db = toolbox.SimstringDBReader(simstring_fp, similarity_name, threshold)
         self.cuisem_db = toolbox.CuiSemTypesDB(cuisem_fp)
         try:
             self.nlp = spacy.load(spacy_lang)
@@ -106,10 +104,10 @@ class QuickUMLS(object):
             msg = (
                 'Model for language "{}" is not downloaded. Please '
                 'run "python -m spacy download {}" before launching '
-                'QuickUMLS'
+                "QuickUMLS"
             ).format(
                 self.language_flag,
-                constants.SPACY_LANGUAGE_MAP.get(self.language_flag, 'xx')
+                constants.SPACY_LANGUAGE_MAP.get(self.language_flag, "xx"),
             )
             raise OSError(msg)
 
@@ -125,44 +123,53 @@ class QuickUMLS(object):
 
         if self._info is None:
             self._info = {
-                'threshold': self.threshold,
-                'similarity_name': self.similarity_name,
-                'window': self.window,
-                'ngram_length': self.ngram_length,
-                'min_match_length': self.min_match_length,
-                'accepted_semtypes': sorted(self.accepted_semtypes),
-                'negations': sorted(self.negations),
-                'valid_punct': sorted(self.valid_punct)
+                "threshold": self.threshold,
+                "similarity_name": self.similarity_name,
+                "window": self.window,
+                "ngram_length": self.ngram_length,
+                "min_match_length": self.min_match_length,
+                "accepted_semtypes": sorted(self.accepted_semtypes),
+                "negations": sorted(self.negations),
+                "valid_punct": sorted(self.valid_punct),
             }
         return self._info
 
     def _is_valid_token(self, tok):
-        return not(
-            tok.is_punct or tok.is_space or
-            tok.pos_ == 'ADP' or tok.pos_ == 'DET' or tok.pos_ == 'CONJ'
+        return not (
+            tok.is_punct
+            or tok.is_space
+            or tok.pos_ == "ADP"
+            or tok.pos_ == "DET"
+            or tok.pos_ == "CONJ"
         )
 
     def _is_valid_start_token(self, tok):
-        return not(
-            tok.like_num or
-            (self._is_stop_term(tok) and tok.lemma_ not in self.negations) or
-            tok.pos_ == 'ADP' or tok.pos_ == 'DET' or tok.pos_ == 'CONJ'
+        return not (
+            tok.like_num
+            or (self._is_stop_term(tok) and tok.lemma_ not in self.negations)
+            or tok.pos_ == "ADP"
+            or tok.pos_ == "DET"
+            or tok.pos_ == "CONJ"
         )
 
     def _is_stop_term(self, tok):
         return tok.text in self._stopwords
 
     def _is_valid_end_token(self, tok):
-        return not(
-            tok.is_punct or tok.is_space or self._is_stop_term(tok) or
-            tok.pos_ == 'ADP' or tok.pos_ == 'DET' or tok.pos_ == 'CONJ'
+        return not (
+            tok.is_punct
+            or tok.is_space
+            or self._is_stop_term(tok)
+            or tok.pos_ == "ADP"
+            or tok.pos_ == "DET"
+            or tok.pos_ == "CONJ"
         )
 
     def _is_valid_middle_token(self, tok):
         return (
-            not(tok.is_punct or tok.is_space) or
-            tok.is_bracket or
-            tok.text in self.valid_punct
+            not (tok.is_punct or tok.is_space)
+            or tok.is_bracket
+            or tok.text in self.valid_punct
         )
 
     def _is_ok_semtype(self, target_semtypes):
@@ -179,7 +186,7 @@ class QuickUMLS(object):
         sent_length = len(sent)
 
         # do not include teterminers inside a span
-        skip_in_span = {token.i for token in sent if token.pos_ == 'DET'}
+        skip_in_span = {token.i for token in sent if token.pos_ == "DET"}
 
         # invalidate a span if it includes any on these  symbols
         invalid_mid_tokens = {
@@ -204,11 +211,12 @@ class QuickUMLS(object):
             # we take a shortcut if the token is the last one
             # in the sentence
             if (
-                i + 1 == sent_length and            # it's the last token
-                self._is_valid_end_token(tok) and   # it's a valid end token
-                len(tok) >= self.min_match_length   # it's of miminum length
+                i + 1 == sent_length
+                and self._is_valid_end_token(tok)  # it's the last token
+                and len(tok)  # it's a valid end token
+                >= self.min_match_length  # it's of miminum length
             ):
-                yield(tok.idx, tok.idx + len(tok), tok.text)
+                yield (tok.idx, tok.idx + len(tok), tok.text)
 
             for j in xrange(i + 1, span_end):
                 if compensate:
@@ -227,9 +235,13 @@ class QuickUMLS(object):
                     continue
 
                 yield (
-                    span.start_char, span.end_char,
-                    ''.join(token.text_with_ws for token in span
-                            if token.i not in skip_in_span).strip()
+                    span.start_char,
+                    span.end_char,
+                    "".join(
+                        token.text_with_ws
+                        for token in span
+                        if token.i not in skip_in_span
+                    ).strip(),
                 )
 
     def _get_all_matches(self, ngrams):
@@ -264,7 +276,7 @@ class QuickUMLS(object):
                         x=ngram_normalized,
                         y=match,
                         n=self.ngram_length,
-                        similarity_name=self.similarity_name
+                        similarity_name=self.similarity_name,
                     )
                     if match_similarity == 0:
                         continue
@@ -273,7 +285,7 @@ class QuickUMLS(object):
                         continue
 
                     if prev_cui is not None and prev_cui == cui:
-                        if match_similarity > ngram_matches[-1]['similarity']:
+                        if match_similarity > ngram_matches[-1]["similarity"]:
                             ngram_matches.pop(-1)
                         else:
                             continue
@@ -282,14 +294,14 @@ class QuickUMLS(object):
 
                     ngram_matches.append(
                         {
-                            'start': start,
-                            'end': end,
-                            'ngram': ngram,
-                            'term': toolbox.safe_unicode(match),
-                            'cui': cui,
-                            'similarity': match_similarity,
-                            'semtypes': semtypes,
-                            'preferred': preferred
+                            "start": start,
+                            "end": end,
+                            "ngram": ngram,
+                            "term": toolbox.safe_unicode(match),
+                            "cui": cui,
+                            "similarity": match_similarity,
+                            "semtypes": semtypes,
+                            "preferred": preferred,
                         }
                     )
 
@@ -297,23 +309,24 @@ class QuickUMLS(object):
                 matches.append(
                     sorted(
                         ngram_matches,
-                        key=lambda m: m['similarity'] + m['preferred'],
-                        reverse=True
+                        key=lambda m: m["similarity"] + m["preferred"],
+                        reverse=True,
                     )
                 )
         return matches
 
     @staticmethod
     def _select_score(match):
-        return (match[0]['similarity'], (match[0]['end'] - match[0]['start']))
+        return (match[0]["similarity"], (match[0]["end"] - match[0]["start"]))
 
     @staticmethod
     def _select_longest(match):
-        return ((match[0]['end'] - match[0]['start']), match[0]['similarity'])
+        return ((match[0]["end"] - match[0]["start"]), match[0]["similarity"])
 
     def _select_terms(self, matches):
         sort_func = (
-            self._select_longest if self.overlapping_criteria == 'length'
+            self._select_longest
+            if self.overlapping_criteria == "length"
             else self._select_score
         )
 
@@ -323,7 +336,7 @@ class QuickUMLS(object):
         final_matches_subset = []
 
         for match in matches:
-            match_interval = (match[0]['start'], match[0]['end'])
+            match_interval = (match[0]["start"], match[0]["end"])
             if match_interval not in intervals:
                 final_matches_subset.append(match)
                 intervals.append(match_interval)
@@ -332,8 +345,7 @@ class QuickUMLS(object):
 
     def _make_token_sequences(self, parsed):
         for i in range(len(parsed)):
-            for j in xrange(
-                    i + 1, min(i + self.window, len(parsed)) + 1):
+            for j in xrange(i + 1, min(i + self.window, len(parsed)) + 1):
                 span = parsed[i:j]
                 yield (span.start_char, span.end_char, span.text)
 
@@ -342,17 +354,17 @@ class QuickUMLS(object):
             return False
 
         print(
-            '[{}] {:,} extracted from {:,} tokens'.format(
+            "[{}] {:,} extracted from {:,} tokens".format(
                 datetime.datetime.now().isoformat(),
                 sum(len(match_group) for match_group in matches),
-                len(parsed)
+                len(parsed),
             ),
-            file=sys.stderr
+            file=sys.stderr,
         )
         return True
 
     def match(self, text, best_match=True, ignore_syntax=False):
-        parsed = self.nlp(u'{}'.format(text))
+        parsed = self.nlp("{}".format(text))
 
         if ignore_syntax:
             ngrams = self._make_token_sequences(parsed)

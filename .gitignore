@@ -92,7 +92,7 @@ ENV/
 cache/
 
 #Simstring folder
-simstring/
+quickumls/simstring/
 
 # Ignored test file
 test.py

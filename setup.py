@@ -6,10 +6,6 @@ setup(
     name="quickumls",
     version="1.0",
     description="Fork from https://github.com/Georgetown-IR-Lab/QuickUMLS",
-    packages=[
-        pkg
-        for pkg in PEP420PackageFinder.find()
-        if (pkg.startswith("quickumls.core") or pkg.startswith("quickumls.simstring"))
-    ],
+    packages=["quickumls"],
     install_requires=requires,
 )

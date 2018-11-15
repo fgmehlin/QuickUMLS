@@ -68,10 +68,10 @@ fi
 # install in the right location
 echo "Installing..."
 cd ..
-mkdir 'simstring'
-touch 'simstring/__init__.py'
-cp ${RELEASE_FOLDER}/_*.so simstring/
-cp ${RELEASE_FOLDER}/simstring.py simstring/simstring.py
+mkdir 'quickumls/simstring'
+touch 'quickumls/simstring/__init__.py'
+cp ${RELEASE_FOLDER}/_*.so quickumls/simstring/
+cp ${RELEASE_FOLDER}/simstring.py quickumls/simstring/simstring.py
 
 # remove remaining files
 rm -rf "${RELEASE_FOLDER}"

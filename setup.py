@@ -8,4 +8,6 @@ setup(
     description="Fork from https://github.com/Georgetown-IR-Lab/QuickUMLS",
     packages=["quickumls.core", "quickumls.simstring"],
     install_requires=requires,
+    package_data={'quickumls.simstring': ['_simstring.cpython-36m-x86_64-linux-gnu.so']},
+    include_package_data=True,
 )

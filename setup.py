@@ -6,6 +6,6 @@ setup(
     name="quickumls",
     version="1.0",
     description="Fork from https://github.com/Georgetown-IR-Lab/QuickUMLS",
-    packages=["quickumls"],
+    packages=["quickumls.core", "quickumls.simstring"],
     install_requires=requires,
 )

@@ -1,6 +1,6 @@
-from setuptools import setup, PEP420PackageFinder
+from setuptools import setup
 
-requires = ["leveldb>=0.193", "numpy>=1.8.2", "spacy>=1.6.0", "unidecode>=0.4.19"]
+requires = ["leveldb>=0.193", "numpy>=1.8.2", "spacy>=1.6.0", "unidecode>=0.4.19", "nltk>=3.3.0"]
 
 setup(
     name="quickumls",
